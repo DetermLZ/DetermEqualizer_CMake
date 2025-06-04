@@ -21,6 +21,15 @@
 
 cmake_minimum_required(VERSION 3.1...3.13 FATAL_ERROR)
 
+# Fix CMake policy warnings across all projects
+if(POLICY CMP0148)
+  cmake_policy(SET CMP0148 OLD)  # Continue using deprecated FindPythonInterp/FindPythonLibs for compatibility
+endif()
+
+if(POLICY CMP0100)
+  cmake_policy(SET CMP0100 NEW)  # Enable AUTOMOC and AUTOUIC to process .hh files
+endif()
+
 if(CMAKE_INSTALL_PREFIX STREQUAL PROJECT_BINARY_DIR)
   message(FATAL_ERROR "Cannot install into build directory")
 endif()

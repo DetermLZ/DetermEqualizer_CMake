@@ -53,16 +53,33 @@ if(${USE_PYTHON_VERSION} STREQUAL auto)
   # Finding Boost first if needed because if the Python3 interpreter is found
   # first there's no way back.
   if(NOT CHOOSE_PYTHON_IGNORE_BOOST)
-    foreach(__suffix 3 38 -py38 37 -py37 36 -py36 -py35 -py34 )
+    # Try common Boost.Python component names, starting with the most specific
+    foreach(__suffix 3 38 37 36 35 34)
       find_package(Boost COMPONENTS python${__suffix} QUIET)
       if(Boost_FOUND)
-        string(TOUPPER  ${__suffix} __boost_python_library_suffix)
+        string(TOUPPER ${__suffix} __boost_python_library_suffix)
         break()
       endif()
     endforeach()
+    
+    # If no numbered version found, try the generic python3 component
+    if(NOT Boost_FOUND)
+      find_package(Boost COMPONENTS python3 QUIET)
+      if(Boost_FOUND)
+        set(__boost_python_library_suffix "3")
+      endif()
+    endif()
   endif()
   if(Boost_FOUND OR CHOOSE_PYTHON_IGNORE_BOOST)
-    find_package(PythonInterp 3 QUIET)
+    # Use modern Python finding if policy allows, otherwise fallback to deprecated
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.12" AND POLICY CMP0148)
+      cmake_policy(PUSH)
+      cmake_policy(SET CMP0148 OLD)
+      find_package(PythonInterp 3 QUIET)
+      cmake_policy(POP)
+    else()
+      find_package(PythonInterp 3 QUIET)
+    endif()
   endif()
 
   if(PYTHONINTERP_FOUND AND (CHOOSE_PYTHON_IGNORE_BOOST OR Boost_FOUND))
@@ -98,7 +115,14 @@ endif()
 if(NOT PYTHON_EXECUTABLE)
   # Regardless of auto-detection, now we need to find the interpreter to
   # query the library suffix.
-  find_package(PythonInterp ${USE_PYTHON_VERSION} QUIET)
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.12" AND POLICY CMP0148)
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0148 OLD)
+    find_package(PythonInterp ${USE_PYTHON_VERSION} QUIET)
+    cmake_policy(POP)
+  else()
+    find_package(PythonInterp ${USE_PYTHON_VERSION} QUIET)
+  endif()
 endif()
 execute_process(COMMAND
   ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1,0,prefix=''))"

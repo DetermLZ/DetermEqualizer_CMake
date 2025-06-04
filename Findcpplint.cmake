@@ -19,11 +19,23 @@
 
 # Check python installation as cpplint is a python script
 if(NOT PYTHON_EXECUTABLE)
+  # Push policy stack and temporarily use old behavior for compatibility
+  cmake_policy(PUSH)
+  if(POLICY CMP0148)
+    cmake_policy(SET CMP0148 OLD)
+  endif()
   find_package(PythonInterp QUIET)
+  cmake_policy(POP)
 endif()
 
 if(NOT PYTHONLIBS_FOUND)
- find_package(PythonLibs QUIET)
+  # Push policy stack and temporarily use old behavior for compatibility
+  cmake_policy(PUSH)
+  if(POLICY CMP0148)
+    cmake_policy(SET CMP0148 OLD)
+  endif()
+  find_package(PythonLibs QUIET)
+  cmake_policy(POP)
 endif()
 
 if(PYTHON_EXECUTABLE AND PYTHONLIBS_FOUND)
