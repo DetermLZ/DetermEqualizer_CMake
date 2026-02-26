@@ -5,7 +5,7 @@ if(NOT TARGET glad)
 
     FetchContent_Declare(
         glad
-        GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+        GIT_REPOSITORY https://github.com/DetermLZ/glad.git
         GIT_TAG v0.1.36
     )
 
