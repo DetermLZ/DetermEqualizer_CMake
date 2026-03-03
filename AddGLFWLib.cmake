@@ -5,11 +5,13 @@ if(NOT TARGET glfw)
     if(NOT glfw3_FOUND)
         include(FetchContent)
 
-        FetchContent_Declare(
-            glfw
-            GIT_REPOSITORY https://github.com/DetermLZ/glfw.git
-            GIT_TAG 3.3.8
-        )
+    FetchContent_Declare(
+        glfw
+        GIT_REPOSITORY https://github.com/DetermLZ/glfw.git
+        GIT_TAG 3.3.8
+    )
+
+    FetchContent_MakeAvailable(glfw)
 
         FetchContent_MakeAvailable(glfw)
     endif()
