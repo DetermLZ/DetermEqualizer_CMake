@@ -1,6 +1,9 @@
 # check if glm is already available
 if(NOT TARGET glm)
-    include(FetchContent)
+    # Prefer system-installed GLM (avoids network dependency during build)
+    find_package(glm QUIET)
+    if(NOT glm_FOUND)
+        include(FetchContent)
 
     # Fetch GLM for matrix operations
     FetchContent_Declare(
@@ -11,4 +14,6 @@ if(NOT TARGET glm)
 
     FetchContent_MakeAvailable(glm)
 
+        FetchContent_MakeAvailable(glm)
+    endif()
 endif()
